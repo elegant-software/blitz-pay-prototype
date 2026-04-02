@@ -259,10 +259,13 @@ jobs:
             --platform all
 
   store-submit:
-    name: Submit to App Stores
+    # name: Submit to App Stores
+    name: Submit to App Stores (disabled)
     runs-on: ubuntu-latest
     needs: eas-build
-    if: ${{ (inputs.submit-to-app-stores || github.event.inputs.submit-to-app-stores == 'true') && secrets.EXPO_TOKEN != '' && secrets.GOOGLE_SERVICE_ACCOUNT_JSON != '' && secrets.APPLE_ID != '' && secrets.APPLE_APP_SPECIFIC_PASSWORD != '' }}
+    # Temporarily disabled.
+    # if: ${{ (inputs.submit-to-app-stores || github.event.inputs.submit-to-app-stores == 'true') && secrets.EXPO_TOKEN != '' && secrets.GOOGLE_SERVICE_ACCOUNT_JSON != '' && secrets.APPLE_ID != '' && secrets.APPLE_APP_SPECIFIC_PASSWORD != '' }}
+    if: ${{ false }}
     defaults:
       run:
         shell: bash
@@ -288,12 +291,14 @@ jobs:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
 
-      - name: Prepare Google Play credentials
+      # - name: Prepare Google Play credentials
+      - name: Prepare Google Play credentials (disabled)
         run: |
           printf '%s' "${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}" > "$PWD/google-play-sa.json"
           export GOOGLE_APPLICATION_CREDENTIALS="$PWD/google-play-sa.json"
 
-      - name: Submit to Google Play
+      # - name: Submit to Google Play
+      - name: Submit to Google Play (disabled)
         run: |
           export GOOGLE_APPLICATION_CREDENTIALS="$PWD/google-play-sa.json"
           eas submit \
@@ -301,7 +306,8 @@ jobs:
             --platform android \
             --profile "${{ inputs.eas-profile || github.event.inputs.eas-profile || 'preview' }}"
 
-      - name: Submit to App Store Connect
+      # - name: Submit to App Store Connect
+      - name: Submit to App Store Connect (disabled)
         run: |
           eas submit \
             --non-interactive \
