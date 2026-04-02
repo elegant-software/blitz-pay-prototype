@@ -44,6 +44,29 @@ CI note for iOS: the `preview` profile is configured with `ios.simulator: true` 
 
 If you need an installable iOS device build (internal distribution or production), run EAS credentials setup once in interactive mode (for example `cd mobile && npx eas credentials`) and then use a non-simulator profile.
 
+### Async EAS builds (recommended)
+
+To avoid blocking on one platform while the other is still running, use the async build script:
+
+- `cd mobile && npm run build:eas:async`
+- `cd mobile && npm run build:eas:async:clear-cache`
+
+Optional arguments:
+
+- `--profile <profile>` (default: `production`)
+- `--platforms ios,android` (or `ios` / `android`)
+- `--poll-ms <milliseconds>` (default: `30000`)
+
+The script starts EAS builds with `--no-wait`, captures build IDs, then polls each build until completion. The process exits non-zero if any platform fails.
+
+### Avoid duplicate EAS builds in CI
+
+The GitHub Actions workflow (`.github/workflows/mobile-react-native-build.yml`) includes a duplicate-build guard before triggering EAS:
+
+- It checks active builds with `eas build:list` for the same app version, profile, and platform.
+- If an `in-progress` or `in-queue` build already exists, CI sets `skip_build=true` and does not trigger a new build.
+- For `eas-platform: all`, it checks Android and iOS independently to prevent duplicate jobs per platform.
+
 Release notes in CI: the workflow input `release-notes-tag` defaults to `latest`. During `eas-update`, CI reads that GitHub release and uses it as the EAS update message. Set a specific tag (for example `v1.2.0`) to target a particular release.
 
 ## Environment variables
