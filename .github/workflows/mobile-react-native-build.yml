@@ -110,7 +110,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Validate Expo app files
         run: |
@@ -121,7 +121,7 @@ jobs:
           }
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ inputs.node-version || github.event.inputs.node-version || '20' }}
           cache: npm
@@ -149,10 +149,10 @@ jobs:
     if: ${{ inputs.run-device-tests || github.event.inputs.run-device-tests == 'true' }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ inputs.node-version || github.event.inputs.node-version || '20' }}
           cache: npm
@@ -177,7 +177,7 @@ jobs:
     if: ${{ inputs.run-eas-build || github.event.inputs.run-eas-build == 'true' }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Validate EAS config
         run: |
@@ -185,7 +185,7 @@ jobs:
           test -f eas.json || { echo "eas.json not found in $(pwd)"; exit 1; }
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ inputs.node-version || github.event.inputs.node-version || '20' }}
           cache: npm
@@ -215,10 +215,10 @@ jobs:
     if: ${{ inputs.run-eas-update || github.event.inputs.run-eas-update == 'true' }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ inputs.node-version || github.event.inputs.node-version || '20' }}
           cache: npm
@@ -255,10 +255,10 @@ jobs:
     if: ${{ false }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ inputs.node-version || github.event.inputs.node-version || '20' }}
           cache: npm
