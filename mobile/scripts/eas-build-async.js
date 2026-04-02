@@ -133,7 +133,8 @@ function isCliInvocationError(error) {
   );
 }
 
-async function runEasJson(args) {
+async function runEasJson(args, options = {}) {
+  const useNonInteractive = options.nonInteractive !== false;
   const commandSpecs = [
     { command: 'eas', prefix: [] },
     { command: 'npx', prefix: ['eas'] },
@@ -141,7 +142,10 @@ async function runEasJson(args) {
 
   let lastError = null;
   for (const spec of commandSpecs) {
-    const fullArgs = [...spec.prefix, ...args, '--json', '--non-interactive'];
+    const fullArgs = [...spec.prefix, ...args, '--json'];
+    if (useNonInteractive) {
+      fullArgs.push('--non-interactive');
+    }
     try {
       const { stdout } = await runCommand(spec.command, fullArgs);
       return parseJsonFromOutput(stdout);
@@ -155,6 +159,22 @@ async function runEasJson(args) {
   }
 
   throw lastError || new Error('Unable to execute EAS CLI.');
+}
+
+async function runBuildViewWithRetry(buildId, attempts = 5, delayMs = 2000) {
+  let lastError = null;
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    try {
+      return await runEasJson(['build:view', buildId], { nonInteractive: false });
+    } catch (error) {
+      lastError = error;
+      if (attempt === attempts) {
+        break;
+      }
+      await delay(delayMs);
+    }
+  }
+  throw lastError || new Error(`Unable to fetch build:view for ${buildId}.`);
 }
 
 function pickBuildObject(payload) {
@@ -200,7 +220,7 @@ async function triggerBuild(platform, options) {
     args.push('--clear-cache');
   }
 
-  const payload = await runEasJson(args);
+  const payload = await runEasJson(args, { nonInteractive: true });
   const build = pickBuildObject(payload);
   const buildId = getBuildId(payload);
 
@@ -224,7 +244,7 @@ async function pollBuild(buildMeta, options) {
   let lastStatus = '';
 
   while (true) {
-    const payload = await runEasJson(['build:view', buildId]);
+    const payload = await runBuildViewWithRetry(buildId);
     const status = getStatus(payload);
     const url = getBuildUrl(payload);
 
